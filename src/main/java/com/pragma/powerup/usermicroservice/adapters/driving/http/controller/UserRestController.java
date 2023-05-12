@@ -26,7 +26,7 @@ import java.util.Map;
 public class UserRestController {
     private final IUserHandler personHandler;
 
-    @Operation(summary = "Add a new user",
+/*    @Operation(summary = "Add a new user",
             responses = {
                 @ApiResponse(responseCode = "201", description = "Person created",
                         content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
@@ -37,7 +37,7 @@ public class UserRestController {
         personHandler.saveUser(userRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PERSON_CREATED_MESSAGE));
-    }
+    }*/
 
     @Operation(summary = "Add a new owner",
             responses = {

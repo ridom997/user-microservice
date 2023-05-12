@@ -22,14 +22,14 @@ public class AuthController {
 
     private final IAuthHandler authHandler;
 
-    @PostMapping("/login")
+/*    @PostMapping("/login")
     public ResponseEntity<JwtResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         return new ResponseEntity<>(authHandler.login(loginRequestDto), HttpStatus.OK);
-    }
+    }*/
 
-    @PostMapping("/refresh")
+/*    @PostMapping("/refresh")
     @SecurityRequirement(name = "jwt")
     public ResponseEntity<JwtResponseDto> refresh(@RequestBody JwtResponseDto jwtResponseDto) throws ParseException {
         return new ResponseEntity<>(authHandler.refresh(jwtResponseDto), HttpStatus.OK);
-    }
+    }*/
 }

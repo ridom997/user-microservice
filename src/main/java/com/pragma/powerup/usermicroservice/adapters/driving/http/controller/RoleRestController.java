@@ -20,11 +20,13 @@ import java.util.List;
 @RestController()
 @RequestMapping("/role")
 @RequiredArgsConstructor
+/*
 @SecurityRequirement(name = "jwt")
+*/
 public class RoleRestController {
     private final IRoleHandler roleHandler;
 
-    @Operation(summary = "Get all the roles",
+/*    @Operation(summary = "Get all the roles",
             responses = {
                     @ApiResponse(responseCode = "200", description = "All roles returned",
                             content = @Content(mediaType = "application/json",
@@ -34,5 +36,5 @@ public class RoleRestController {
     @GetMapping("")
     public ResponseEntity<List<RoleResponseDto>> getAllRoles() {
         return ResponseEntity.ok(roleHandler.getAllRoles());
-    }
+    }*/
 }
