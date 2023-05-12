@@ -1,5 +1,6 @@
 package com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.impl;
 
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserAndRoleRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
@@ -22,5 +23,10 @@ public class UserHandlerImpl implements IUserHandler {
     @Override
     public void saveOwner(OwnerRequestDto ownerRequestDto) {
         personServicePort.saveOwner(personRequestMapper.toUser(ownerRequestDto));
+    }
+
+    @Override
+    public boolean userHasRole(UserAndRoleRequestDto userAndRoleRequestDto) {
+        return personServicePort.userHasRole(userAndRoleRequestDto.getIdUser(),userAndRoleRequestDto.getIdRole());
     }
 }

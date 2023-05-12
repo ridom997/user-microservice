@@ -6,14 +6,10 @@ public class Constants {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final Long CLIENT_ROLE_ID = 1L;
-    public static final Long EMPLOYEE_ROLE_ID = 2L;
-    public static final Long PROVIDER_ROLE_ID = 3L;
-    public static final int MAX_PAGE_SIZE = 2;
+
     public static final String RESPONSE_MESSAGE_KEY = "message";
+    public static final String RESPONSE_BOOLEAN_RESULT_KEY = "result";
     public static final String PERSON_CREATED_MESSAGE = "Person created successfully";
-    public static final String USER_CREATED_MESSAGE = "User created successfully";
-    public static final String USER_DELETED_MESSAGE = "User deleted successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";
     public static final String WRONG_CREDENTIALS_MESSAGE = "Wrong credentials or role not allowed";
     public static final String NO_DATA_FOUND_MESSAGE = "No data found for the requested petition";
@@ -43,6 +39,9 @@ public class Constants {
     public static final String MAIL_NOT_VALID = "Mail is not valid";
     public static final String DNI_NOT_VALID = "Dni must have only numbers";
     public static final String ERROR_CONVERTING_DATE = "Error parsing birthday date";
+
+    public static final String USER_ROLE_NOT_FOUND_MESSAGE = "No role associated with the user id provided has been found";
+
 
 
 }

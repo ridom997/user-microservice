@@ -1,10 +1,10 @@
 package com.pragma.powerup.usermicroservice.domain.usecase;
 
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
+import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.model.User;
-import com.pragma.powerup.usermicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,13 +23,13 @@ class UserUseCaseTest {
     @Mock
     private IUserPersistencePort mockPersonPersistencePort;
     @Mock
-    private IRolePersistencePort mockRolePersistencePort;
+    private IRoleServicePort mockRoleServicePort;
 
     private UserUseCase userUseCaseUnderTest;
 
     @BeforeEach
     void setUp() {
-        userUseCaseUnderTest = new UserUseCase(mockPersonPersistencePort, mockRolePersistencePort);
+        userUseCaseUnderTest = new UserUseCase(mockPersonPersistencePort, mockRoleServicePort);
     }
 
     @Test
@@ -90,7 +90,7 @@ class UserUseCaseTest {
         // Setup
         final User user = new User(null, "name", "surname", "asd@c.c", "+4123", "address", "idDniType", "123",
                 "idPersonType", "password", "11-11-1111",null);
-        when(mockRolePersistencePort.getRoleById(3L)).thenThrow(new NoDataFoundException());
+        when(mockRoleServicePort.getRoleById(3L)).thenThrow(new NoDataFoundException());
         assertThrows(NoDataFoundException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockPersonPersistencePort, times(0)).saveUser(user);
     }
@@ -109,13 +109,13 @@ class UserUseCaseTest {
         // Setup
         final User user = new User(null, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
                 "idPersonType", "password", "11-11-1111",new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
-        when(mockRolePersistencePort.getRoleById(3L)).thenReturn(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
+        when(mockRoleServicePort.getRoleById(3L)).thenReturn(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
 
         // Run the test
         userUseCaseUnderTest.saveOwner(user);
 
         // Verify the results
         verify(mockPersonPersistencePort).saveUser(user);
-        verify(mockRolePersistencePort).getRoleById(3L);
+        verify(mockRoleServicePort).getRoleById(3L);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+//@EnableMethodSecurity to enable preAuthorize
 public class MainSecurity {
 
     @Autowired
@@ -45,9 +46,9 @@ public class MainSecurity {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .authorizeRequests(requests -> requests
+                .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/auth/login", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health", "/user/**").permitAll()
-                        //.requestMatchers("/user").hasRole("ADMIN")
+                        //.requestMatchers("/user/validateRole", "/user/createOwner").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin().disable()
