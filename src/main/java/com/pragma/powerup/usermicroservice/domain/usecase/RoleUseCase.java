@@ -7,6 +7,7 @@ import com.pragma.powerup.usermicroservice.domain.model.Role;
 import java.util.List;
 
 public class RoleUseCase implements IRoleServicePort {
+    //NO USED IN HU-1 AND HU-2
 
     private final IRolePersistencePort rolePersistencePort;
 

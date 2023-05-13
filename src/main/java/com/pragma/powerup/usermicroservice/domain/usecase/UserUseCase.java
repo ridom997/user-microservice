@@ -50,6 +50,8 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public boolean userHasRole(Long idUser, Long idRole) {
+        if (idUser == null || idRole == null)
+            throw new RequiredVariableNotPresentException();
         User user = findUserById(idUser);
         if(user.getRole() == null)
             throw new UserDoesntHaveRoleException();

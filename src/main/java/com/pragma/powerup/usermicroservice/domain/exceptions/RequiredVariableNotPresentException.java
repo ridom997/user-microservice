@@ -4,4 +4,8 @@ public class RequiredVariableNotPresentException extends RuntimeException{
     public RequiredVariableNotPresentException(Throwable cause) {
         super(cause);
     }
+
+    public RequiredVariableNotPresentException() {
+        super();
+    }
 }
