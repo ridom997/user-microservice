@@ -44,7 +44,7 @@ To get a local copy up and running follow these steps.
    ```
 5. Run the project (Right-click the class UserMicroserviceApplication and choose Run) to create the tables of the database
 6. After the tables are created execute src/main/resources/data.sql content to populate the database
-6. Open Swagger UI and search the /auth/login endpoint and login with userDni: 123, password: 1234
+
 
 <!-- USAGE -->
 ## Usage
