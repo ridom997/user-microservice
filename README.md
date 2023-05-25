@@ -51,7 +51,17 @@ To get a local copy up and running follow these steps.
 
 1. Right-click the class UserMicroserviceApplication and choose Run
 2. Open [http://localhost:8090/swagger-ui/index.html](http://localhost:8090/swagger-ui/index.html) in your web browser
-3. Test the endpoints
+3. Test the endpoints (view guide)
+
+<!-- GUIDE -->
+## GUIDE (SPANISH)
+-Las cédulas y correos de los usuarios deben ser unicos. \
+-Las credenciales de Administrador (correo: email@some.com, clave: 1234). Este usuario tiene el id = 1.\
+-Las credenciales de Propietario (correo: email2@some.com, clave: 1234). Este usuario tiene el id = 2.
+
++ HU1: Crear un nuevo Propietario (se crea con id desde el 3 en adelante) "/user/createOwner".
++ HU2: Se hizo un endpoint para validar si un usuario es el rol proporcionado "/user/validateRole"
++ HU5: Es necesario usar el endpoint "/auth/login" con las credenciales previamente proporcionadas, o tambien con los usuarios Propietarios previamente creados.
 
 <!-- ROADMAP -->
 ## Tests
