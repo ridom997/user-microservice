@@ -51,6 +51,7 @@ public class UserRestController {
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
     })
     @PostMapping(path = "createOwner")
+    @SecurityRequirement(name = "jwt")
     public ResponseEntity<Map<String, String>> saveOwner(@RequestBody @Valid OwnerRequestDto ownerRequestDto) {
         personHandler.saveOwner(ownerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -67,6 +68,7 @@ public class UserRestController {
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
     })
     @PostMapping(path = "validateRole")
+    @SecurityRequirement(name = "jwt")
     public ResponseEntity<Map<String, Boolean>> userHasRole(@RequestBody @Valid UserAndRoleRequestDto userAndRoleRequestDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_BOOLEAN_RESULT_KEY, personHandler.userHasRole(userAndRoleRequestDto)));
