@@ -37,8 +37,9 @@ public class JwtProvider {
         PrincipalUser usuarioPrincipal = (PrincipalUser) authentication.getPrincipal();
         List<String> roles = usuarioPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         return Jwts.builder()
-                .setSubject(usuarioPrincipal.getUsername())
+                .setSubject(usuarioPrincipal.getEmail())
                 .claim("roles", roles)
+                .claim("idUser",usuarioPrincipal.getIdUser())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + expiration * 180))
                 .signWith(SignatureAlgorithm.HS256, secret.getBytes())
