@@ -3,6 +3,7 @@ package com.pragma.powerup.usermicroservice.adapters.driving.http.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
 import com.pragma.powerup.usermicroservice.configuration.ControllerAdvisor;
 import com.pragma.powerup.usermicroservice.domain.exceptions.UserAgeNotAllowedException;
@@ -25,8 +26,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +58,10 @@ class UserRestControllerTest {
         return new ObjectMapper().readValue(json, Map.class);
     }
 
+    private <T> T jsonToObject(String json, Class<T> classToMap) throws JsonProcessingException {
+        return new ObjectMapper().readValue(json,classToMap);
+    }
+
     private OwnerRequestDto validOwnerRequestDto(){
         OwnerRequestDto ownerRequestDto = new OwnerRequestDto();
         ownerRequestDto.setName("name");
@@ -75,16 +79,19 @@ class UserRestControllerTest {
 
     @Test
     void testSaveOwner_created() throws Exception {
-        Map<String, String> expectedResponseBody = Collections.singletonMap(RESPONSE_MESSAGE_KEY_EXPECTED, PERSON_CREATED_MESSAGE_EXPECTED);
+        UserResponseDto userResponseDtoExpected = new UserResponseDto(1L, "name", "surname",
+                "adda@.as.c", "+12312", "add", "asda", "123", "asd", "ROLE_OWNER");
+        when(mockPersonHandler.saveOwner(any(OwnerRequestDto.class))).thenReturn(userResponseDtoExpected);
 
         MockHttpServletResponse response = mockMvc.perform(post("/user/createOwner")
                         .content(mapToJson(validOwnerRequestDto()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse();
+
         assertAll(
                 () -> assertEquals(HttpStatus.CREATED.value(),response.getStatus()),
-                () -> assertEquals(expectedResponseBody,jsonToMap(response.getContentAsString())),
+                () -> assertEquals(mapToJson(userResponseDtoExpected),response.getContentAsString()),
                 () -> verify(mockPersonHandler).saveOwner(any(OwnerRequestDto.class))
         );
     }

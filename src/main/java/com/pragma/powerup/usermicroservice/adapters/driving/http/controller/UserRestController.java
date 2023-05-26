@@ -2,6 +2,7 @@ package com.pragma.powerup.usermicroservice.adapters.driving.http.controller;
 
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserAndRoleRequestDto;
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
 import com.pragma.powerup.usermicroservice.configuration.Constants;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +44,7 @@ public class UserRestController {
     @Operation(summary = "Add a new owner",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Owner created",
-                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Map"))),
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "409", description = "Owner already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
                     @ApiResponse(responseCode = "400", description = "Bad request, check response message",
@@ -51,10 +52,9 @@ public class UserRestController {
     })
     @PostMapping(path = "createOwner")
     @SecurityRequirement(name = "jwt")
-    public ResponseEntity<Map<String, String>> saveOwner(@RequestBody @Valid OwnerRequestDto ownerRequestDto) {
-        personHandler.saveOwner(ownerRequestDto);
+    public ResponseEntity<UserResponseDto> saveOwner(@RequestBody @Valid OwnerRequestDto ownerRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Collections.singletonMap(Constants.RESPONSE_MESSAGE_KEY, Constants.PERSON_CREATED_MESSAGE));
+                .body(personHandler.saveOwner(ownerRequestDto));
     }
 
     @Operation(summary = "Validate if user has a role",

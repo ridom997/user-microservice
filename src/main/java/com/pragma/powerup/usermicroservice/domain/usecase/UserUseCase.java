@@ -28,7 +28,7 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
-    public void saveOwner(User user) {
+    public User saveOwner(User user) {
         try{
             LocalDate birthdayDate = LocalDate.parse(user.getBirthday(), SingletonConstants.dateTimeFormatter);
             if (!AgeUtils.isMoreThan18YearsOld(birthdayDate))
@@ -40,7 +40,7 @@ public class UserUseCase implements IUserServicePort {
             if (!user.getDniNumber().matches(Constants.DNI_REGEX))
                 throw new DniRegexException();
             user.setRole(roleServicePort.getRoleById(Constants.OWNER_ROLE_ID));
-            userPersistencePort.saveUser(user);
+            return userPersistencePort.saveUser(user);
         } catch (DateTimeParseException e){
             throw new DateConvertException(e);
         } catch (NullPointerException e){

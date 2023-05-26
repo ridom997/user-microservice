@@ -102,15 +102,16 @@ class UserUseCaseTest {
     }
 
     @Test
-    void testSaveOwner() {
-        final User user = new User(null, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
+    void testSaveOwner_successfully() {
+        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
                 "idPersonType", "password", "11-11-1111",new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
         when(mockRoleServicePort.getRoleById(3L)).thenReturn(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
-
+        when(mockUserPersistencePort.saveUser(user)).thenReturn(user);
         // Run the test
-        userUseCaseUnderTest.saveOwner(user);
+        User result = userUseCaseUnderTest.saveOwner(user);
 
         // Verify the results
+        assertEquals(user,result);
         verify(mockUserPersistencePort).saveUser(user);
         verify(mockRoleServicePort).getRoleById(3L);
     }
