@@ -8,6 +8,7 @@ public class Constants {
 
 
     public static final String RESPONSE_MESSAGE_KEY = "message";
+    public static final String ROLES_KEY_MESSAGE = "roles";
     public static final String RESPONSE_BOOLEAN_RESULT_KEY = "result";
     public static final String PERSON_CREATED_MESSAGE = "Person created successfully";
     public static final String RESPONSE_ERROR_MESSAGE_KEY = "error";

@@ -15,21 +15,6 @@ public class User {
 
     private Role role;
 
-    public User(Long id, String name, String surname, String mail, String phone, String address, String idDniType, String dniNumber, String idPersonType, String password, String birthday, Role role) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.mail = mail;
-        this.phone = phone;
-        this.address = address;
-        this.idDniType = idDniType;
-        this.dniNumber = dniNumber;
-        this.idPersonType = idPersonType;
-        this.password = password;
-        this.birthday = birthday;
-        this.role = role;
-    }
-
     public Long getId() {
         return id;
     }

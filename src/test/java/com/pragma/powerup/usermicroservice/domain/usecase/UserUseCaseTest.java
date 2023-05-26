@@ -31,14 +31,27 @@ class UserUseCaseTest {
         userUseCaseUnderTest = new UserUseCase(mockUserPersistencePort, mockRoleServicePort);
     }
 
+    private User validUser(){
+        User user = new User();
+        user.setId(0L);
+        user.setName("name");
+        user.setSurname("surname");
+        user.setMail("mail@e.c");
+        user.setPhone("123321");
+        user.setAddress("cra 123");
+        user.setIdDniType("cc");
+        user.setDniNumber("333");
+        user.setIdPersonType("natural");
+        user.setPassword("password");
+        user.setBirthday("11-11-1990");
+        user.setRole(new Role(0L, "name", "description"));
+        return user;
+    }
+
     @Test
     void testSaveUser() {
-        // Setup
-        final User user = new User(0L, "name", "surname", "mail", "phone", "address", "idDniType", "dniNumber",
-                "idPersonType", "password", "birthday", new Role(0L, "name", "description"));
-
         // Run the test
-        userUseCaseUnderTest.saveUser(user);
+        userUseCaseUnderTest.saveUser(validUser());
 
         // Verify the results
         verify(mockUserPersistencePort).saveUser(any(User.class));
@@ -46,48 +59,48 @@ class UserUseCaseTest {
 
     @Test
     void testSaveOwner_dateTimeParseException() {
-        final User user = new User(null, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "asdasd",null);
+        final User user = validUser();
+        user.setBirthday("asd");
         assertThrows(DateConvertException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_userAgeNotAllowedException() {
-        final User user = new User(null, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-2020",null);
+        final User user = validUser();
+        user.setBirthday("11-11-2020");
         assertThrows(UserAgeNotAllowedException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_mailRegexException() {
-        final User user = new User(null, "name", "surname", "asd", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setMail("2020");
         assertThrows(MailRegexException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_phoneRegexException() {
-        final User user = new User(null, "name", "surname", "asd@c.c", "+sq4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setPhone("ewqe20");
         assertThrows(PhoneRegexException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_dniRegexException() {
-        final User user = new User(null, "name", "surname", "asd@c.c", "+4123", "address", "idDniType", "asd",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setDniNumber("1sd2020");
         assertThrows(DniRegexException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_noRoleFounded() {
-        final User user = new User(null, "name", "surname", "asd@c.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setRole(null);
         when(mockRoleServicePort.getRoleById(3L)).thenThrow(new NoDataFoundException());
         assertThrows(NoDataFoundException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
@@ -95,16 +108,16 @@ class UserUseCaseTest {
 
     @Test
     void testSaveOwner_requiredVariableNotPresentException() {
-        final User user = new User(null, "name", "surname", null, "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setPhone(null);
         assertThrows(RequiredVariableNotPresentException.class, () -> userUseCaseUnderTest.saveOwner(user));
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
     @Test
     void testSaveOwner_successfully() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
+        final User user = validUser();
+        user.setRole(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
         when(mockRoleServicePort.getRoleById(3L)).thenReturn(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
         when(mockUserPersistencePort.saveUser(user)).thenReturn(user);
         // Run the test
@@ -118,8 +131,9 @@ class UserUseCaseTest {
 
     @Test
     void testUserHasRole_true() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
+        final User user = validUser();
+        user.setId(1L);
+        user.setRole(new Role(3L, "ROLE_OWNER", "ROLE_OWNER"));
         Long idUser = 1l;
         Long idRole = 3l;
         when(mockUserPersistencePort.findUserById(1L)).thenReturn(user);
@@ -132,8 +146,9 @@ class UserUseCaseTest {
 
     @Test
     void testUserHasRole_false() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",new Role(2L, "ROLE_OWNER", "ROLE_OWNER"));
+        final User user = validUser();
+        user.setId(1L);
+        user.setRole(new Role(2L, "ROLE_OWNER", "ROLE_OWNER"));
         Long idUser = 1l;
         Long idRole = 3l;
         when(mockUserPersistencePort.findUserById(1L)).thenReturn(user);
@@ -146,8 +161,9 @@ class UserUseCaseTest {
 
     @Test
     void testUserHasRole_requiredVariableNotPresentException() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",new Role(2L, "ROLE_OWNER", "ROLE_OWNER"));
+        final User user = validUser();
+        user.setId(1L);
+        user.setRole(new Role(2L, "ROLE_OWNER", "ROLE_OWNER"));
         Long idUser = 1l;
         Long idRole = null;
 
@@ -157,8 +173,9 @@ class UserUseCaseTest {
 
     @Test
     void testUserHasRole_userDoesntHaveRoleException() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setId(1L);
+        user.setRole(null);
         Long idUser = 1l;
         Long idRole = 3L;
         when(mockUserPersistencePort.findUserById(1L)).thenReturn(user);
@@ -170,8 +187,9 @@ class UserUseCaseTest {
 
     @Test
     void testFindUserById_successfully() {
-        final User user = new User(1L, "name", "surname", "mail@e.c", "+4123", "address", "idDniType", "123",
-                "idPersonType", "password", "11-11-1111",null);
+        final User user = validUser();
+        user.setId(1L);
+
         Long idUser = 1l;
         when(mockUserPersistencePort.findUserById(1L)).thenReturn(user);
 

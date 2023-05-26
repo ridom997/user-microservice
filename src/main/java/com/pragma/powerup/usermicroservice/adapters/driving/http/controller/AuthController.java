@@ -37,9 +37,4 @@ public class AuthController {
         return new ResponseEntity<>(authHandler.login(loginRequestDto), HttpStatus.OK);
     }
 
-/*    @PostMapping("/refresh")
-    @SecurityRequirement(name = "jwt")
-    public ResponseEntity<JwtResponseDto> refresh(@RequestBody JwtResponseDto jwtResponseDto) throws ParseException {
-        return new ResponseEntity<>(authHandler.refresh(jwtResponseDto), HttpStatus.OK);
-    }*/
 }
