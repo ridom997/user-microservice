@@ -66,9 +66,9 @@ Cada vez que se vaya a revisar un lote de historias de usuario se recomienda bor
 
 ### HU1: 
 + Es necesario ejecutar del data.sql la seccion "-- hu-1"
-+ Crear un nuevo Propietario. "/user/createOwner" estando autenticado como administrador (admin)
++ Crear un nuevo Propietario. "/user/createOwner" Desde la Hu-5 se debe estar autenticado como administrador (admin)
 ### HU2: 
-+ Se hizo un endpoint para validar si un usuario es el rol proporcionado "/user/validateRole". Se debe estar autenticado como administrador (admin).
++ Se hizo un endpoint para validar si un usuario es el rol proporcionado "/user/validateRole". Desde la Hu 5 se debe estar autenticado como administrador (admin).
 ### HU5:
 + Es necesario ejecutar del data.sql la seccion "-- hu-5"
 + Es necesario usar el endpoint "/auth/login" con las credenciales previamente proporcionadas, o tambien con los usuarios con rol Propietarios (owner) previamente creados.
