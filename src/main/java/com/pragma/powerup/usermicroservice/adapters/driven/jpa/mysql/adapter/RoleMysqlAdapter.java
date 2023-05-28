@@ -1,9 +1,8 @@
 package com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.adapter;
 
-import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositories.IRoleRepository;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.entity.RoleEntity;
-import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.mappers.IRoleEntityMapper;
+import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositories.IRoleRepository;
 import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.spi.IRolePersistencePort;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +17,13 @@ public class RoleMysqlAdapter implements IRolePersistencePort {
     @Override
     public List<Role> getAllRoles() {
         List<RoleEntity> roleEntityList = roleRepository.findAll();
-        if (roleEntityList.isEmpty()) {
-            throw new NoDataFoundException();
-        }
         return roleEntityMapper.toRoleList(roleEntityList);
     }
 
     @Override
     public Role getRoleById(Long id) {
         Optional<RoleEntity> roleEntity = roleRepository.findById(id);
-        if (!roleEntity.isPresent())
-            throw new NoDataFoundException();
+        if (!roleEntity.isPresent()) return null;
         return roleEntityMapper.toRole(roleEntity.get());
     }
 }

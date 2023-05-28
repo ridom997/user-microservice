@@ -1,5 +1,6 @@
 package com.pragma.powerup.usermicroservice.adapters.driving.http.controller;
 
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserAndRoleRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
@@ -32,7 +33,9 @@ public class UserRestController {
             responses = {
                     @ApiResponse(responseCode = "201", description = "Owner created",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
-                    @ApiResponse(responseCode = "409", description = "Owner already exists",
+                    @ApiResponse(responseCode = "404", description = "Owner role in db not found",
+                            content = @Content(mediaType = "application/json",  schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "409", description = "User already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
                     @ApiResponse(responseCode = "400", description = "Bad request, check response message",
                             content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
@@ -58,5 +61,29 @@ public class UserRestController {
     public ResponseEntity<Map<String, Boolean>> userHasRole(@RequestBody @Valid UserAndRoleRequestDto userAndRoleRequestDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(Collections.singletonMap(Constants.RESPONSE_BOOLEAN_RESULT_KEY, personHandler.userHasRole(userAndRoleRequestDto)));
+    }
+
+    @Operation(summary = "Add a new employee",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Employee created",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+                    @ApiResponse(responseCode = "409", description = "User already exist",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "400", description = "Bad request, check response message",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "403", description = "Attempted unauthorized action",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "404", description = "Restaurant or role in db not found",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "500", description = "Fail in communication with foodcourt-microservice",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
+            })
+    @PostMapping(path = "createEmployee")
+    @SecurityRequirement(name = "jwt")
+    public ResponseEntity<UserResponseDto> saveEmployee(@RequestBody @Valid EmployeeRequestDto employeeRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(personHandler.saveEmployee(employeeRequestDto));
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface IUserRepository extends JpaRepository<UserEntity, Long> {
+    Optional<UserEntity> findByDniNumberAndIdDniType(String dniNumber, String idDniType);
     Optional<UserEntity> findByDniNumber(String dniNumber);
 
     Boolean existsByDniNumber(String dniNumber);

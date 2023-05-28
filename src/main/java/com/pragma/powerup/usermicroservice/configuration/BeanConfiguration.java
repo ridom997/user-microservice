@@ -1,5 +1,7 @@
 package com.pragma.powerup.usermicroservice.configuration;
 
+import com.pragma.powerup.usermicroservice.adapters.driven.feign.adapter.RestaurantValidationFeignAdapter;
+import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.adapter.PasswordUtilsSpringAdapter;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.adapter.RoleMysqlAdapter;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.adapter.UserMysqlAdapter;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.mappers.IRoleEntityMapper;
@@ -8,6 +10,7 @@ import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositorie
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositories.IUserRepository;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
+import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRolePersistencePort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.usermicroservice.domain.usecase.RoleUseCase;
@@ -25,6 +28,7 @@ public class BeanConfiguration {
     private final IRoleEntityMapper roleEntityMapper;
     private final IUserEntityMapper userEntityMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RestaurantValidationFeignAdapter restaurantValidationCommunicationPort;
     @Bean
     public IRoleServicePort roleServicePort() {
         return new RoleUseCase(rolePersistencePort());
@@ -35,10 +39,14 @@ public class BeanConfiguration {
     }
     @Bean
     public IUserPersistencePort userPersistencePort() {
-        return new UserMysqlAdapter(userRepository, userEntityMapper, passwordEncoder);
+        return new UserMysqlAdapter(userRepository, userEntityMapper);
     }
     @Bean
     public IUserServicePort userServicePort() {
-        return new UserUseCase(userPersistencePort(), roleServicePort());
+        return new UserUseCase(userPersistencePort(), roleServicePort(), restaurantValidationCommunicationPort, passwordActionsPort());
+    }
+    @Bean
+    public IPasswordActionsPort passwordActionsPort(){
+        return new PasswordUtilsSpringAdapter(passwordEncoder);
     }
 }

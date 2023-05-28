@@ -30,7 +30,7 @@ public class UserEntity {
     private String phone;
     private String address;
     private String idDniType;
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(nullable = false, length = 20)
     private String dniNumber;
     private String idPersonType;
     private String password;

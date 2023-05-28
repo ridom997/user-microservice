@@ -1,8 +1,8 @@
 package com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.impl;
 
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserAndRoleRequestDto;
-import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.mapper.IUserRequestMapper;
@@ -16,9 +16,11 @@ public class UserHandlerImpl implements IUserHandler {
     private final IUserServicePort personServicePort;
     private final IUserRequestMapper personRequestMapper;
 
+
     @Override
-    public void saveUser(UserRequestDto userRequestDto) {
-        personServicePort.saveUser(personRequestMapper.toUser(userRequestDto));
+    public UserResponseDto saveEmployee(EmployeeRequestDto employeeRequestDto) {
+        return personRequestMapper.toUserResponse(personServicePort.saveEmployee(personRequestMapper.toUser(employeeRequestDto),
+                employeeRequestDto.getIdRole(),employeeRequestDto.getIdRestaurant()));
     }
 
     @Override

@@ -1,21 +1,26 @@
 package com.pragma.powerup.usermicroservice.configuration;
 
+import com.pragma.powerup.usermicroservice.adapters.driven.feign.exceptions.FailConnectionToExternalMicroserviceException;
+import com.pragma.powerup.usermicroservice.adapters.driven.feign.exceptions.RestaurantFeignBadRequestException;
+import com.pragma.powerup.usermicroservice.adapters.driven.feign.exceptions.RestaurantFeignNotFoundException;
+import com.pragma.powerup.usermicroservice.adapters.driven.feign.exceptions.RestaurantFeignUnauthorizedException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.MailAlreadyExistsException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.PersonAlreadyExistsException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.RoleNotAllowedForCreationException;
-import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.RoleNotFoundException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.UserAlreadyExistsException;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.UserNotFoundException;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,4 +150,42 @@ public class ControllerAdvisor {
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PERSON_NOT_FOUND_MESSAGE));
     }
 
+    @ExceptionHandler(FailConnectionToExternalMicroserviceException.class)
+    public ResponseEntity<Map<String, String>> handleFailConnectionToExternalMicroserviceException(FailConnectionToExternalMicroserviceException failConnectionToExternalMicroserviceException) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, INTERNAL_ERROR_APOLOGIZE_MESSAGE));
+    }
+
+    @ExceptionHandler(ForbiddenActionException.class)
+    public ResponseEntity<Map<String, String>> handleUnauthorizedExceptionException(
+            ForbiddenActionException forbiddenActionException) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, forbiddenActionException.getMessage()));
+    }
+
+    @ExceptionHandler(RestaurantFeignBadRequestException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantFeignBadRequestException(
+            RestaurantFeignBadRequestException restaurantFeignBadRequestException) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Required variable is missing or Restaurant doesn't have owner"));
+    }
+    @ExceptionHandler(RestaurantFeignNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantFeignNotFoundException(
+            RestaurantFeignNotFoundException restaurantFeignNotFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Restaurant not found"));
+    }
+
+    @ExceptionHandler(RestaurantFeignUnauthorizedException.class)
+    public ResponseEntity<Map<String, String>> handleRestaurantFeignUnauthorizedException(
+            RestaurantFeignUnauthorizedException restaurantFeignUnauthorizedException) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Unauthorized request to microservice or idUser doesn't exists in token"));
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity<Map<String, String>> handleParsingExceptions(Exception exception) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Error parsing a request variable"));
+    }
 }
