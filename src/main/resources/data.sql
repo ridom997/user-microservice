@@ -9,3 +9,10 @@ INSERT INTO `user` (id, address, dni_number, id_dni_type, id_person_type, mail, 
 -- hu-5
 -- execute this to control that every user has an unique mail
 ALTER TABLE powerup.`user` MODIFY mail VARCHAR(255) NOT NULL, ADD CONSTRAINT uk_mail UNIQUE (mail);
+
+-- hu-6
+-- create employee role
+INSERT INTO `role` (`id`, `description`, `name`) VALUES ('4', 'ROLE_EMPLOYEE', 'ROLE_EMPLOYEE');
+-- create constraint to prevent users with same dniNumber + dniType
+-- en caso de error favor validar que no hayan usuarios que repitan esta pareja de variables.
+ALTER TABLE `user` ADD CONSTRAINT uk_uniqueDni UNIQUE (dni_number , id_dni_type);

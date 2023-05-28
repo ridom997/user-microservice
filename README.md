@@ -55,13 +55,29 @@ To get a local copy up and running follow these steps.
 
 <!-- GUIDE -->
 ## GUIDE (SPANISH)
--Las cédulas y correos de los usuarios deben ser unicos. \
--Las credenciales de Administrador (correo: email@some.com, clave: 1234). Este usuario tiene el id = 1.\
--Las credenciales de Propietario (correo: email2@some.com, clave: 1234). Este usuario tiene el id = 2.
+Cada vez que se vaya a revisar un lote de historias de usuario se recomienda borrar la base de datos existente (en caso de tenerla), y generarla otra vez con los pasos 4 y 5 del apartado "Installation"
 
-+ HU1: Crear un nuevo Propietario (se crea con id desde el 3 en adelante) "/user/createOwner".
-+ HU2: Se hizo un endpoint para validar si un usuario es el rol proporcionado "/user/validateRole"
-+ HU5: Es necesario usar el endpoint "/auth/login" con las credenciales previamente proporcionadas, o tambien con los usuarios Propietarios previamente creados.
+### Datos importantes: 
+1. Desde la hu-5 no pueden existir 2 o más usuarios con el mismo correo. 
+2. Desde la hu-6 no pueden existir 2 o más usuarios con par variables iguales (dniNumber, dniType).
+3. En caso de llegar un usuario con las caracteristicas antes mencionadas no se podrá agregar a la base de datos, todo esto para seguir el modelo E-R del reto.
+4. Las credenciales de Administrador (correo: email@some.com, clave: 1234). Este usuario tiene el id = 1.
+5. Las credenciales de Propietario (correo: email2@some.com, clave: 1234). Este usuario tiene el id = 2.
+
+### HU1: 
++ Es necesario ejecutar del data.sql la seccion "-- hu-1"
++ Crear un nuevo Propietario. "/user/createOwner" estando autenticado como administrador (admin)
+### HU2: 
++ Se hizo un endpoint para validar si un usuario es el rol proporcionado "/user/validateRole". Se debe estar autenticado como administrador (admin).
+### HU5:
++ Es necesario ejecutar del data.sql la seccion "-- hu-5"
++ Es necesario usar el endpoint "/auth/login" con las credenciales previamente proporcionadas, o tambien con los usuarios con rol Propietarios (owner) previamente creados.
+### HU6:
++ En caso de que en base de datos en la tabla "user" columna "dni_number" haya una constraint tipo UNIQUE, favor eliminarla (esto aplica solo si se tiene la base de datos de la hu-5 hacia atrás, desde la hu-6 esta acción no es necesaria).
++ Es necesario ejecutar del data.sql la seccion "-- hu-6"
++ Para que la petición se cumpla correctamente hay que tener el microservicio foodcourt-microservice activo.
++ Es necesario usar el endpoint "/user/createEmployee" estando autenticado como un propietario (owner).
++ En la peticion el id del rol empleado (employee) es el 4 (idRole = 4).
 
 <!-- ROADMAP -->
 ## Tests
