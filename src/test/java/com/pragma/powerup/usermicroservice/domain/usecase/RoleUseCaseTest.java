@@ -1,5 +1,7 @@
 package com.pragma.powerup.usermicroservice.domain.usecase;
 
+import com.pragma.powerup.usermicroservice.domain.exceptions.RequiredVariableNotPresentException;
+import com.pragma.powerup.usermicroservice.domain.exceptions.RoleNotFoundException;
 import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.spi.IRolePersistencePort;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,9 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-public class RoleUseCaseTest {
+class RoleUseCaseTest {
 
     private IRolePersistencePort rolePersistencePort;
     private RoleUseCase roleUseCase;
@@ -28,10 +31,18 @@ public class RoleUseCaseTest {
         Long id = 1L;
         when(rolePersistencePort.getRoleById(id)).thenReturn(null);
 
-        Role role = roleUseCase.getRoleById(id);
+        assertThrows(RoleNotFoundException.class, () -> roleUseCase.getRoleById(id));
 
         verify(rolePersistencePort, times(1)).getRoleById(id);
-        assertEquals(null, role);
+    }
+
+    @Test
+    void getRoleByIdTest_whenIdProvidedIsNull() {
+        Long id = null;
+
+        assertThrows(RequiredVariableNotPresentException.class, () -> roleUseCase.getRoleById(id));
+
+        verify(rolePersistencePort, times(0)).getRoleById(id);
     }
 
     @Test

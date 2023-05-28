@@ -5,6 +5,8 @@ import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.model.User;
+import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
+import com.pragma.powerup.usermicroservice.domain.spi.IRestaurantValidationCommunicationPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +26,18 @@ class UserUseCaseTest {
     @Mock
     private IRoleServicePort mockRoleServicePort;
 
+    @Mock
+    private IRestaurantValidationCommunicationPort restaurantValidationCommunicationPort;
+
+    @Mock
+    private IPasswordActionsPort passwordActionsPort;
+
+    private Role employeeRole = new Role(4L, "ROLE_EMPLOYEE", "ROLE_EMPLOYEE");
     private UserUseCase userUseCaseUnderTest;
 
     @BeforeEach
     void setUp() {
-        userUseCaseUnderTest = new UserUseCase(mockUserPersistencePort, mockRoleServicePort);
+        userUseCaseUnderTest = new UserUseCase(mockUserPersistencePort, mockRoleServicePort, restaurantValidationCommunicationPort, passwordActionsPort);
     }
 
     private User validUser(){
@@ -36,7 +45,7 @@ class UserUseCaseTest {
         user.setId(0L);
         user.setName("name");
         user.setSurname("surname");
-        user.setMail("mail@e.c");
+        user.setMail("mai.l@we.e");
         user.setPhone("123321");
         user.setAddress("cra 123");
         user.setIdDniType("cc");
@@ -111,6 +120,15 @@ class UserUseCaseTest {
         final User user = validUser();
         user.setPhone(null);
         assertThrows(RequiredVariableNotPresentException.class, () -> userUseCaseUnderTest.saveOwner(user));
+        verify(mockUserPersistencePort, times(0)).saveUser(user);
+    }
+
+    @Test
+    void testSaveOwner_birthdayVariableNotPresentException() {
+        final User user = validUser();
+        user.setBirthday(null);
+        RequiredVariableNotPresentException requiredVariableNotPresentException = assertThrows(RequiredVariableNotPresentException.class, () -> userUseCaseUnderTest.saveOwner(user));
+        assertEquals("Birthday date is not present",requiredVariableNotPresentException.getMessage());
         verify(mockUserPersistencePort, times(0)).saveUser(user);
     }
 
@@ -207,5 +225,57 @@ class UserUseCaseTest {
         assertThrows(UserDoesntExistException.class, () -> userUseCaseUnderTest.findUserById(idUser));
 
         verify(mockUserPersistencePort).findUserById(1L);
+    }
+
+    @Test
+    void saveEmployeeTest_successfully() {
+        String encryptedPassword = "encrypted";
+        Long idRole = 4L;
+        User expectedUser = validUser();
+        expectedUser.setRole(this.employeeRole);
+        expectedUser.setPassword(encryptedPassword);
+        Long idRestaurant = 100L;
+        when(restaurantValidationCommunicationPort.isTheRestaurantOwner(idRestaurant)).thenReturn(true);
+        when(mockRoleServicePort.getRoleById(4L)).thenReturn(employeeRole);
+        when(passwordActionsPort.encryptPassword(anyString())).thenReturn("encryptedbcrypt");
+        when(mockUserPersistencePort.saveUser(any(User.class))).thenReturn(expectedUser);
+
+        User result = userUseCaseUnderTest.saveEmployee(expectedUser, idRole, idRestaurant);
+
+        assertEquals(expectedUser,result);
+        verify(restaurantValidationCommunicationPort, times(1)).isTheRestaurantOwner(idRestaurant);
+        verify(mockRoleServicePort, times(1)).getRoleById(4L);
+        verify(passwordActionsPort, times(1)).encryptPassword(anyString());
+
+    }
+
+    @Test
+    void saveEmployeeTest_forbiddenActionExceptionUserIsNotOwner() {
+        Long idRole = 4L;
+        Long idRestaurant = 100L;
+        when(restaurantValidationCommunicationPort.isTheRestaurantOwner(idRestaurant)).thenReturn(false);
+        User user = validUser();
+
+        assertThrows(ForbiddenActionException.class, () -> userUseCaseUnderTest.saveEmployee(user, idRole, idRestaurant));
+
+        verify(restaurantValidationCommunicationPort, times(1)).isTheRestaurantOwner(idRestaurant);
+        verify(mockRoleServicePort, times(0)).getRoleById(anyLong());
+        verify(passwordActionsPort, times(0)).encryptPassword(anyString());
+
+    }
+
+    @Test
+    void saveEmployeeTest_forbiddenActionExceptionIdRoleIsNotEmployee() {
+        Long idRole = 5L;
+        Long idRestaurant = 100L;
+        when(restaurantValidationCommunicationPort.isTheRestaurantOwner(idRestaurant)).thenReturn(true);
+        User user = validUser();
+
+        assertThrows(ForbiddenActionException.class, () -> userUseCaseUnderTest.saveEmployee(user, idRole, idRestaurant));
+
+        verify(restaurantValidationCommunicationPort, times(1)).isTheRestaurantOwner(idRestaurant);
+        verify(mockRoleServicePort, times(0)).getRoleById(anyLong());
+        verify(passwordActionsPort, times(0)).encryptPassword(anyString());
+
     }
 }

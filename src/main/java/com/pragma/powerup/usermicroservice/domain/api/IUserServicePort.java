@@ -9,4 +9,6 @@ public interface IUserServicePort {
     boolean userHasRole(Long idUser, Long idRole);
 
     User findUserById(Long idUser);
+
+    User saveEmployee(User user, Long idRole, Long idRestaurant);
 }

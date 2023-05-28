@@ -5,6 +5,10 @@ public class RequiredVariableNotPresentException extends RuntimeException{
         super(cause);
     }
 
+    public RequiredVariableNotPresentException(String message) {
+        super(message);
+    }
+
     public RequiredVariableNotPresentException() {
         super();
     }
