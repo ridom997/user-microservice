@@ -33,6 +33,7 @@ class UserUseCaseTest {
     private IPasswordActionsPort passwordActionsPort;
 
     private Role employeeRole = new Role(4L, "ROLE_EMPLOYEE", "ROLE_EMPLOYEE");
+    private Role clientRole = new Role(2L,"ROLE_CLIENT","ROLE_CLIENT");
     private UserUseCase userUseCaseUnderTest;
 
     @BeforeEach
@@ -57,6 +58,18 @@ class UserUseCaseTest {
         return user;
     }
 
+    private User validClient(){
+        User user = new User();
+        user.setName("name");
+        user.setSurname("surname");
+        user.setDniNumber("333");
+        user.setIdDniType("cc");
+        user.setPhone("123321");
+        user.setMail("mai.l@we.e");
+        user.setPassword("password");
+        user.setRole(new Role(2L, "ROLE_USER", "ROLE_USER"));
+        return user;
+    }
     @Test
     void testSaveUser() {
         // Run the test
@@ -276,6 +289,87 @@ class UserUseCaseTest {
         verify(restaurantValidationCommunicationPort, times(1)).isTheRestaurantOwner(idRestaurant);
         verify(mockRoleServicePort, times(0)).getRoleById(anyLong());
         verify(passwordActionsPort, times(0)).encryptPassword(anyString());
+
+    }
+
+    @Test
+    void saveEmployeeTest_idRoleNull() {
+        Long idRole = null;
+        Long idRestaurant = 1L;
+        User user = validUser();
+
+        assertThrows(RequiredVariableNotPresentException.class, () -> userUseCaseUnderTest.saveEmployee(user, idRole, idRestaurant));
+
+        verify(restaurantValidationCommunicationPort, times(0)).isTheRestaurantOwner(idRestaurant);
+        verify(mockRoleServicePort, times(0)).getRoleById(anyLong());
+        verify(passwordActionsPort, times(0)).encryptPassword(anyString());
+    }
+
+    @Test
+    void saveEmployeeTest_idRestauranteNull() {
+        Long idRole = 1L;
+        Long idRestaurant = null;
+        User user = validUser();
+
+        assertThrows(RequiredVariableNotPresentException.class, () -> userUseCaseUnderTest.saveEmployee(user, idRole, idRestaurant));
+
+        verify(restaurantValidationCommunicationPort, times(0)).isTheRestaurantOwner(idRestaurant);
+        verify(mockRoleServicePort, times(0)).getRoleById(anyLong());
+        verify(passwordActionsPort, times(0)).encryptPassword(anyString());
+    }
+    @Test
+    void saveClientTest_idRoleIsNotClientRoleId() {
+        Long idRoleClient = 3L;
+        User client = validClient();
+
+        assertThrows(ForbiddenActionException.class, () -> userUseCaseUnderTest.saveClient(client,idRoleClient));
+
+        verify(mockRoleServicePort, times(0)).getRoleById(idRoleClient);
+        verify(passwordActionsPort, times(0)).encryptPassword(client.getPassword());
+        verify(mockUserPersistencePort, times(0)).saveUser(any(User.class));
+    }
+
+    @Test
+    void saveClientTest_success() {
+        Long idRoleClient = 2L;
+        User client = validClient();
+        String passwordEncrypted = "encriptado";
+        when(mockRoleServicePort.getRoleById(idRoleClient)).thenReturn(clientRole);
+        when(passwordActionsPort.encryptPassword(client.getPassword())).thenReturn(passwordEncrypted);
+        when(mockUserPersistencePort.saveUser(client)).thenReturn(client);
+
+        User clientResult = userUseCaseUnderTest.saveClient(client,idRoleClient);
+
+        verify(mockRoleServicePort, times(1)).getRoleById(idRoleClient);
+        verify(passwordActionsPort, times(1)).encryptPassword(validClient().getPassword());
+        verify(mockUserPersistencePort).saveUser(any(User.class));
+        assertEquals(passwordEncrypted, clientResult.getPassword());
+    }
+
+    @Test
+    void saveClientTest_requiredVariableIsNotPresent() {
+        User user = validClient();
+        user.setIdDniType(null);
+        Long idRoleClient = 2L;
+
+        assertThrows(RequiredVariableNotPresentException.class,() -> userUseCaseUnderTest.saveClient(user,idRoleClient));
+
+        verify(mockRoleServicePort, times(0)).getRoleById(idRoleClient);
+        verify(passwordActionsPort, times(0)).encryptPassword(user.getPassword());
+        verify(mockUserPersistencePort, times(0)).saveUser(any(User.class));
+
+    }
+
+    @Test
+    void saveClientTest_idRoleNull() {
+        User user = validClient();
+        Long idRole = null;
+
+        assertThrows(RequiredVariableNotPresentException.class,() -> userUseCaseUnderTest.saveClient(user,idRole));
+
+        verify(mockRoleServicePort, times(0)).getRoleById(idRole);
+        verify(passwordActionsPort, times(0)).encryptPassword(user.getPassword());
+        verify(mockUserPersistencePort, times(0)).saveUser(any(User.class));
 
     }
 }

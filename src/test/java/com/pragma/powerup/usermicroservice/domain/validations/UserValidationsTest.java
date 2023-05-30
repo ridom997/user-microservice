@@ -20,6 +20,7 @@ class UserValidationsTest {
         validUser.setPhone("+123");
         validUser.setDniNumber("12345678");
         validUser.setPassword("password");
+        validUser.setIdDniType("cc");
     }
 
     @Test
@@ -89,5 +90,12 @@ class UserValidationsTest {
     void verifyUserAgeTest_success() {
         String validBirthdayDate = "11-11-1990";
         assertDoesNotThrow(() -> UserValidations.verifyUserAge(validBirthdayDate));
+    }
+
+    @Test
+    void verifyUserAgeTest_userIsNull() {
+        assertThrows(
+                RequiredVariableNotPresentException.class,
+                () -> UserValidations.basicUserVariablesValidations(null));
     }
 }

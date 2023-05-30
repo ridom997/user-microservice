@@ -15,9 +15,12 @@ public class UserValidations {
     private UserValidations(){}
 
     public static void basicUserVariablesValidations(User user) {
+        if(user == null)
+            throw new RequiredVariableNotPresentException("User is not present");
         validateStringRegex("Mail", user.getMail(), MAIL_REGEX, new MailRegexException());
         validateStringRegex("Phone", user.getPhone(), PHONE_REGEX, new PhoneRegexException());
         validateStringRegex("Dni number", user.getDniNumber(), DNI_REGEX, new DniRegexException());
+        validateThatStringVariableIsPresent("Dni type", user.getIdDniType());
         validateThatStringVariableIsPresent("Password", user.getPassword());
     }
 

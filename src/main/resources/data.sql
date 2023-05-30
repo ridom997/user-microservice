@@ -16,3 +16,7 @@ INSERT INTO `role` (`id`, `description`, `name`) VALUES ('4', 'ROLE_EMPLOYEE', '
 -- create constraint to prevent users with same dniNumber + dniType
 -- en caso de error favor validar que no hayan usuarios que repitan esta pareja de variables.
 ALTER TABLE `user` ADD CONSTRAINT uk_uniqueDni UNIQUE (dni_number , id_dni_type);
+
+-- hu-8
+-- update name of role client
+UPDATE powerup.`role` SET description='ROLE_CLIENT',name='ROLE_CLIENT' WHERE id=2;

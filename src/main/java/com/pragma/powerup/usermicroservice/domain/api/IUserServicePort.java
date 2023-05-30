@@ -11,4 +11,5 @@ public interface IUserServicePort {
     User findUserById(Long idUser);
 
     User saveEmployee(User user, Long idRole, Long idRestaurant);
+    User saveClient(User user, Long idRole);
 }
