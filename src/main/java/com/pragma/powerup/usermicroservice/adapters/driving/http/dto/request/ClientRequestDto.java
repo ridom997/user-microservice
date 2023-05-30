@@ -1,10 +1,8 @@
 package com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request;
 
 import com.pragma.powerup.usermicroservice.configuration.Constants;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,43 +12,49 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OwnerRequestDto {
+public class ClientRequestDto {
     @NotBlank
     @Size(max = 255)
+    @Schema(example = "Berna")
     private String name;
 
     @NotBlank
     @Size(max = 255)
+    @Schema(example = "Salazar")
     private String surname;
 
     @NotBlank
     @Size(max = 10)
     @Pattern(regexp = Constants.DNI_REGEX, message = "Dni number must be only numbers")
+    @Schema(example = "1121000")
     private String dniNumber;
+
+    @NotBlank
+    @Size(max = 255)
+    @Schema(example = "cc")
+    private String idDniType;
 
     @NotBlank
     @Size(max = 13)
     @Pattern(regexp = Constants.PHONE_REGEX, message = "Phone is in bad format")
+    @Schema(example = "+312311")
     private String phone;
-
-    @NotBlank
-    @Pattern(regexp = Constants.BIRTHDAY_DATE_FORMAT_REGEX, message = "Date must be in the format dd-MM-yyyy")
-    private String birthday;
 
     @NotBlank
     @Size(max = 255)
     @Email(regexp = Constants.MAIL_REGEX)
+    @Schema(example = "el.cliente@pragma.com")
     private String mail;
 
     @NotBlank
     @Size(max = 255)
+    @Schema(example = "1234")
     private String password;
 
-    @NotBlank
-    @Size(max = 255)
-    private String idDniType;
+    @NotNull
+    @Schema(example = "2")
+    private Long idRole;
 
     private String address;
     private String idPersonType;
-
 }

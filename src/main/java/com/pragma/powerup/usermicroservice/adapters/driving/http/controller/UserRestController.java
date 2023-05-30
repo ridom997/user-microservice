@@ -1,5 +1,6 @@
 package com.pragma.powerup.usermicroservice.adapters.driving.http.controller;
 
+import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.ClientRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.EmployeeRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.OwnerRequestDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.UserAndRoleRequestDto;
@@ -85,5 +86,24 @@ public class UserRestController {
     public ResponseEntity<UserResponseDto> saveEmployee(@RequestBody @Valid EmployeeRequestDto employeeRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(personHandler.saveEmployee(employeeRequestDto));
+    }
+
+    @Operation(summary = "Create client account",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Client created",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+                    @ApiResponse(responseCode = "409", description = "User already exist",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "400", description = "Bad request, check response message",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "403", description = "Attempted unauthorized action",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "404", description = "Role is not in db",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
+            })
+    @PostMapping(path = "createClient")
+    public ResponseEntity<UserResponseDto> saveClient(@RequestBody @Valid ClientRequestDto clientRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(personHandler.saveClient(clientRequestDto));
     }
 }

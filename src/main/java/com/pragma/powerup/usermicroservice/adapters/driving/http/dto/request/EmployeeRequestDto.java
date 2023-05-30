@@ -59,8 +59,12 @@ public class EmployeeRequestDto {
     @Schema(example = "4")
     private Long idRole;
 
-    private String address;
+    @NotBlank
+    @Size(max = 255)
+    @Schema(example = "cc")
     private String idDniType;
+
+    private String address;
     private String idPersonType;
 
 }
