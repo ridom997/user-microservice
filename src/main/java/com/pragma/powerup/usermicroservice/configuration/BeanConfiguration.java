@@ -8,10 +8,13 @@ import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.mappers.IRo
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.mappers.IUserEntityMapper;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositories.IRoleRepository;
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.repositories.IUserRepository;
+import com.pragma.powerup.usermicroservice.adapters.driving.http.adapter.TokenValidationSpringAdapter;
+import com.pragma.powerup.usermicroservice.configuration.security.jwt.JwtProvider;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
 import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRolePersistencePort;
+import com.pragma.powerup.usermicroservice.domain.spi.ITokenValidationsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.usermicroservice.domain.usecase.RoleUseCase;
 import com.pragma.powerup.usermicroservice.domain.usecase.UserUseCase;
@@ -29,6 +32,7 @@ public class BeanConfiguration {
     private final IUserEntityMapper userEntityMapper;
     private final PasswordEncoder passwordEncoder;
     private final RestaurantValidationFeignAdapter restaurantValidationCommunicationPort;
+    private final JwtProvider jwtProvider;
     @Bean
     public IRoleServicePort roleServicePort() {
         return new RoleUseCase(rolePersistencePort());
@@ -43,10 +47,15 @@ public class BeanConfiguration {
     }
     @Bean
     public IUserServicePort userServicePort() {
-        return new UserUseCase(userPersistencePort(), roleServicePort(), restaurantValidationCommunicationPort, passwordActionsPort());
+        return new UserUseCase(userPersistencePort(), roleServicePort(), restaurantValidationCommunicationPort, passwordActionsPort(), tokenValidationPort());
     }
     @Bean
     public IPasswordActionsPort passwordActionsPort(){
         return new PasswordUtilsSpringAdapter(passwordEncoder);
+    }
+
+    @Bean
+    public ITokenValidationsPort tokenValidationPort(){
+        return new TokenValidationSpringAdapter(jwtProvider);
     }
 }

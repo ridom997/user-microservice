@@ -33,7 +33,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
             throws ServletException, IOException {
-        String token = getToken(req);
+        RequestHolder.setHttpServletRequest(req); //we assign this variable to use it in the getToken method
+        String token = getToken();
         if (token != null && jwtProvider.validateToken(token)) {
             String nombreUsuario = jwtProvider.getNombreUsuarioFromToken(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(nombreUsuario);
@@ -56,11 +57,25 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return false;
     }
 
-    private String getToken(HttpServletRequest request) {
-        String header = request.getHeader(AUTHORIZATION_HEADER);
+    public static String getToken() {
+        String header = RequestHolder.getHttpServletRequest().getHeader(AUTHORIZATION_HEADER);
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7); // return everything after "Bearer "
         }
         return null;
+    }
+
+    class RequestHolder{
+
+        private RequestHolder(){}
+        private static HttpServletRequest httpServletRequest;
+
+        public static HttpServletRequest getHttpServletRequest() {
+            return httpServletRequest;
+        }
+
+        public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
+            RequestHolder.httpServletRequest = httpServletRequest;
+        }
     }
 }
