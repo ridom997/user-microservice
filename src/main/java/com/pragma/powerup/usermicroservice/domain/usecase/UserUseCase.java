@@ -3,17 +3,18 @@ package com.pragma.powerup.usermicroservice.domain.usecase;
 import com.pragma.powerup.usermicroservice.configuration.Constants;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
-import com.pragma.powerup.usermicroservice.domain.exceptions.RequiredVariableNotPresentException;
 import com.pragma.powerup.usermicroservice.domain.exceptions.ForbiddenActionException;
+import com.pragma.powerup.usermicroservice.domain.exceptions.RequiredVariableNotPresentException;
 import com.pragma.powerup.usermicroservice.domain.exceptions.UserDoesntExistException;
 import com.pragma.powerup.usermicroservice.domain.exceptions.UserDoesntHaveRoleException;
 import com.pragma.powerup.usermicroservice.domain.model.User;
 import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRestaurantValidationCommunicationPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.usermicroservice.domain.validations.ArgumentValidations;
 import com.pragma.powerup.usermicroservice.domain.validations.UserValidations;
 
-import static com.pragma.powerup.usermicroservice.configuration.Constants.ID_ROLE_IS_NOT_PRESENT_MESSAGE;
+import static com.pragma.powerup.usermicroservice.configuration.Constants.ID_ROLE_MESSAGE;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
@@ -64,10 +65,8 @@ public class UserUseCase implements IUserServicePort {
 
     @Override
     public User saveEmployee(User user, Long idRole, Long idRestaurant) {
-        if(idRole == null)
-            throw new RequiredVariableNotPresentException(ID_ROLE_IS_NOT_PRESENT_MESSAGE);
-        if(idRestaurant == null)
-            throw new RequiredVariableNotPresentException("Id restaurant is not present");
+        ArgumentValidations.validateObject(idRole,ID_ROLE_MESSAGE);
+        ArgumentValidations.validateObject(idRestaurant,"Id restaurant");
         if (Boolean.FALSE.equals(restaurantValidationCommunicationPort.isTheRestaurantOwner(idRestaurant)))
             throw new ForbiddenActionException("The user who made the request does not have permission to create employees in this restaurant.");
         if(!idRole.equals(Constants.EMPLOYEE_ROLE_ID))
@@ -76,13 +75,13 @@ public class UserUseCase implements IUserServicePort {
         UserValidations.basicUserVariablesValidations(user);
         user.setRole(roleServicePort.getRoleById(Constants.EMPLOYEE_ROLE_ID));
         user.setPassword(passwordActionsPort.encryptPassword(user.getPassword()));
+        user.setIdRestaurant(idRestaurant);
         return userPersistencePort.saveUser(user);
     }
 
     @Override
     public User saveClient(User user, Long idRole) {
-        if (idRole == null)
-            throw new RequiredVariableNotPresentException(ID_ROLE_IS_NOT_PRESENT_MESSAGE);
+        ArgumentValidations.validateObject(idRole,ID_ROLE_MESSAGE);
         if(!idRole.equals(Constants.CLIENT_ROLE_ID))
             throw new ForbiddenActionException("The user who made the request attempted to create a non-client user.");
         UserValidations.basicUserVariablesValidations(user);

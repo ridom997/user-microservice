@@ -47,7 +47,10 @@ public class Constants {
     public static final Long EMPLOYEE_ROLE_ID = 4L;
     public static final Long CLIENT_ROLE_ID = 2L;
     public static final String INTERNAL_ERROR_APOLOGIZE_MESSAGE = "Something wrong happened, try again later!.";
-    public static final String ID_ROLE_IS_NOT_PRESENT_MESSAGE = "Id role is not present";
+    public static final String ID_ROLE_MESSAGE = "Id role";
+    public static final String NOT_PRESENT_MESSAGE = " is not present";
+
+
 
 
 

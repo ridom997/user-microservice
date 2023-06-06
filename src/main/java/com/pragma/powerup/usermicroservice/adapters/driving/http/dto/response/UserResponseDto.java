@@ -16,4 +16,5 @@ public class UserResponseDto {
     private String dniNumber;
     private String idPersonType;
     private String roleName;
+    private Long idRestaurant;
 }
