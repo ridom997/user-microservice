@@ -12,4 +12,6 @@ public interface IUserServicePort {
 
     User saveEmployee(User user, Long idRole, Long idRestaurant);
     User saveClient(User user, Long idRole);
+
+    Boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant, String token);
 }

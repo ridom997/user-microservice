@@ -3,17 +3,16 @@ package com.pragma.powerup.usermicroservice.domain.usecase;
 import com.pragma.powerup.usermicroservice.configuration.Constants;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
-import com.pragma.powerup.usermicroservice.domain.exceptions.ForbiddenActionException;
-import com.pragma.powerup.usermicroservice.domain.exceptions.RequiredVariableNotPresentException;
-import com.pragma.powerup.usermicroservice.domain.exceptions.UserDoesntExistException;
-import com.pragma.powerup.usermicroservice.domain.exceptions.UserDoesntHaveRoleException;
+import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import com.pragma.powerup.usermicroservice.domain.model.User;
 import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRestaurantValidationCommunicationPort;
+import com.pragma.powerup.usermicroservice.domain.spi.ITokenValidationsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.usermicroservice.domain.validations.ArgumentValidations;
 import com.pragma.powerup.usermicroservice.domain.validations.UserValidations;
 
+import static com.pragma.powerup.usermicroservice.configuration.Constants.EMPLOYEE_ROLE_NAME;
 import static com.pragma.powerup.usermicroservice.configuration.Constants.ID_ROLE_MESSAGE;
 
 public class UserUseCase implements IUserServicePort {
@@ -23,12 +22,14 @@ public class UserUseCase implements IUserServicePort {
     private final IRestaurantValidationCommunicationPort restaurantValidationCommunicationPort;
 
     private final IPasswordActionsPort passwordActionsPort;
+    private final ITokenValidationsPort tokenValidationsPort;
 
-    public UserUseCase(IUserPersistencePort personPersistencePort, IRoleServicePort roleServicePort, IRestaurantValidationCommunicationPort restaurantValidationCommunicationPort, IPasswordActionsPort passwordActionsPort) {
+    public UserUseCase(IUserPersistencePort personPersistencePort, IRoleServicePort roleServicePort, IRestaurantValidationCommunicationPort restaurantValidationCommunicationPort, IPasswordActionsPort passwordActionsPort, ITokenValidationsPort tokenValidationsPort) {
         this.userPersistencePort = personPersistencePort;
         this.roleServicePort = roleServicePort;
         this.restaurantValidationCommunicationPort = restaurantValidationCommunicationPort;
         this.passwordActionsPort = passwordActionsPort;
+        this.tokenValidationsPort = tokenValidationsPort;
     }
 
     @Override
@@ -89,5 +90,17 @@ public class UserUseCase implements IUserServicePort {
         user.setPassword(passwordActionsPort.encryptPassword(user.getPassword()));
         return userPersistencePort.saveUser(user);
     }
+
+    @Override
+    public Boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant, String token) {
+        tokenValidationsPort.verifyRoleInToken(token,EMPLOYEE_ROLE_NAME);
+        ArgumentValidations.validateObject(idRestaurant,"Id restaurant");
+        Long idUserFromToken = tokenValidationsPort.findIdUserFromToken(token);
+        User user = findUserById(idUserFromToken);
+        if(user.getIdRestaurant() == null)
+            throw new NoRestaurantAssociatedWithUserException();
+        return user.getIdRestaurant().equals(idRestaurant);
+    }
+
 
 }
