@@ -10,6 +10,7 @@ public class User {
     private String idDniType;
     private String dniNumber;
     private String idPersonType;
+    private Long idRestaurant;
     private String password;
     private String birthday;
 
@@ -109,5 +110,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Long getIdRestaurant() {
+        return idRestaurant;
+    }
+
+    public void setIdRestaurant(Long idRestaurant) {
+        this.idRestaurant = idRestaurant;
     }
 }

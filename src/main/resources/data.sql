@@ -20,3 +20,7 @@ ALTER TABLE `user` ADD CONSTRAINT uk_uniqueDni UNIQUE (dni_number , id_dni_type)
 -- hu-8
 -- update name of role client
 UPDATE powerup.`role` SET description='ROLE_CLIENT',name='ROLE_CLIENT' WHERE id=2;
+
+-- hu-11
+-- update user table to allow employees to work in a restaurant.
+ALTER TABLE powerup.`user` ADD id_restaurant BIGINT NULL;

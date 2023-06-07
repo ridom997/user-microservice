@@ -7,6 +7,7 @@ import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.Use
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.mapper.IUserRequestMapper;
+import com.pragma.powerup.usermicroservice.configuration.security.jwt.JwtUtils;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,10 @@ public class UserHandlerImpl implements IUserHandler {
     public UserResponseDto saveClient(ClientRequestDto clientRequestDto) {
         return personRequestMapper.toUserResponse(personServicePort.saveClient(personRequestMapper.toUser(clientRequestDto),
                 clientRequestDto.getIdRole()));
+    }
+
+    @Override
+    public boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant) {
+        return personServicePort.existsRelationWithUserAndIdRestaurant(idRestaurant, JwtUtils.getTokenFromRequestHeaders());
     }
 }

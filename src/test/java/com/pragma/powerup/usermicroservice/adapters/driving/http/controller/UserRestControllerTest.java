@@ -80,7 +80,7 @@ class UserRestControllerTest {
     @Test
     void testSaveOwner_created() throws Exception {
         UserResponseDto userResponseDtoExpected = new UserResponseDto(1L, "name", "surname",
-                "adda@.as.c", "+12312", "add", "asda", "123", "asd", "ROLE_OWNER");
+                "adda@.as.c", "+12312", "add", "asda", "123", "asd", "ROLE_OWNER",null);
         when(mockPersonHandler.saveOwner(any(OwnerRequestDto.class))).thenReturn(userResponseDtoExpected);
 
         MockHttpServletResponse response = mockMvc.perform(post("/user/createOwner")

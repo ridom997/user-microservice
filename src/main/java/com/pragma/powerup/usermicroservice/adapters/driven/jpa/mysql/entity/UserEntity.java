@@ -38,4 +38,6 @@ public class UserEntity {
     @ManyToOne(optional = true)
     @JoinColumn(name = "id_role")
     private RoleEntity role;
+    @Column(name = "id_restaurant")
+    private Long idRestaurant;
 }

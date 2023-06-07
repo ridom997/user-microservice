@@ -12,4 +12,6 @@ public interface IUserHandler {
     boolean userHasRole(UserAndRoleRequestDto userAndRoleRequestDto);
 
     UserResponseDto saveClient(ClientRequestDto clientRequestDto);
+
+    boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant);
 }

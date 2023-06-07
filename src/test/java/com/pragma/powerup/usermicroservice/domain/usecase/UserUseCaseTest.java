@@ -7,8 +7,11 @@ import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.model.User;
 import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRestaurantValidationCommunicationPort;
+import com.pragma.powerup.usermicroservice.domain.spi.ITokenValidationsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.usermicroservice.domain.validations.ArgumentValidations;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,13 +35,15 @@ class UserUseCaseTest {
     @Mock
     private IPasswordActionsPort passwordActionsPort;
 
+    @Mock
+    private ITokenValidationsPort tokenValidationsPort;
     private Role employeeRole = new Role(4L, "ROLE_EMPLOYEE", "ROLE_EMPLOYEE");
     private Role clientRole = new Role(2L,"ROLE_CLIENT","ROLE_CLIENT");
     private UserUseCase userUseCaseUnderTest;
 
     @BeforeEach
     void setUp() {
-        userUseCaseUnderTest = new UserUseCase(mockUserPersistencePort, mockRoleServicePort, restaurantValidationCommunicationPort, passwordActionsPort);
+        userUseCaseUnderTest = new UserUseCase(mockUserPersistencePort, mockRoleServicePort, restaurantValidationCommunicationPort, passwordActionsPort, tokenValidationsPort);
     }
 
     private User validUser(){
@@ -372,4 +377,70 @@ class UserUseCaseTest {
         verify(mockUserPersistencePort, times(0)).saveUser(any(User.class));
 
     }
+    @Test
+    void existsRelationWithUserAndIdRestaurant_whenIdRestaurantIsNullThenThrowException() {
+        String token = "token";
+        Long idRestaurant = null;
+
+        assertThrows(RequiredVariableNotPresentException.class,
+                () -> userUseCaseUnderTest.existsRelationWithUserAndIdRestaurant(idRestaurant, token)
+        );
+
+        verify(tokenValidationsPort, times(1)).verifyRoleInToken(any(), any());
+        verify(tokenValidationsPort, times(0)).findIdUserFromToken(any());
+    }
+
+    @Test
+    void existsRelationWithUserAndIdRestaurant_whenNoRestaurantAssociated() {
+        Long idRestaurant = 1L;
+        String token = "token";
+        Long idUserFromToken = 1L;
+        User user = validUser();
+        user.setIdRestaurant(null);
+        when(tokenValidationsPort.findIdUserFromToken(token)).thenReturn(idUserFromToken);
+        when(mockUserPersistencePort.findUserById(idUserFromToken)).thenReturn(user);
+
+        assertThrows(NoRestaurantAssociatedWithUserException.class, () -> {
+            userUseCaseUnderTest.existsRelationWithUserAndIdRestaurant(idRestaurant, token);
+        });
+
+        verify(tokenValidationsPort, times(1)).findIdUserFromToken(token);
+        verify(mockUserPersistencePort, times(1)).findUserById(idUserFromToken);
+    }
+
+    @Test
+    void existsRelationWithUserAndIdRestaurantWhenRelationDoesNotExist() {
+        Long idRestaurant = 1L;
+        String token = "token";
+        Long idUserFromToken = 2L;
+        User user = validUser();
+        user.setId(idUserFromToken);
+        user.setIdRestaurant(2L);
+        when(tokenValidationsPort.findIdUserFromToken(token)).thenReturn(idUserFromToken);
+        when(mockUserPersistencePort.findUserById(idUserFromToken)).thenReturn(user);
+
+        Boolean result = userUseCaseUnderTest.existsRelationWithUserAndIdRestaurant(idRestaurant, token);
+
+        assertFalse(result);
+        verify(tokenValidationsPort, times(1)).verifyRoleInToken(token, "ROLE_EMPLOYEE");
+        verify(mockUserPersistencePort, times(1)).findUserById(idUserFromToken);
+    }
+
+    @Test
+    void existsRelationWithUserAndIdRestaurant_successfully() {
+        Long idRestaurant = 1L;
+        String token = "token";
+        Long idUserFromToken = 2L;
+        User user = validUser();
+        user.setIdRestaurant(idRestaurant);
+        when(tokenValidationsPort.findIdUserFromToken(token)).thenReturn(idUserFromToken);
+        when(mockUserPersistencePort.findUserById(idUserFromToken)).thenReturn(user);
+
+        Boolean result = userUseCaseUnderTest.existsRelationWithUserAndIdRestaurant(idRestaurant, token);
+
+        assertTrue(result);
+        verify(tokenValidationsPort, times(1)).verifyRoleInToken(token, "ROLE_EMPLOYEE");
+        verify(mockUserPersistencePort, times(1)).findUserById(idUserFromToken);
+    }
+
 }

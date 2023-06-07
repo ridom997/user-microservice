@@ -13,13 +13,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -106,4 +104,24 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(personHandler.saveClient(clientRequestDto));
     }
+
+    @Operation(summary = "Validate if the user from token is an employee of the given restaurant",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Validation done",
+                            content = @Content(mediaType = "application/json", schema = @Schema(example = "{\"isARestaurantEmployee\": true}"))),
+                    @ApiResponse(responseCode = "404", description = "No restaurant associated with user",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "400", description = "Bad request (check response message)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
+            })
+    @GetMapping(value = "/validate-restaurant/{id_restaurant}")
+    @SecurityRequirement(name = "jwt")
+    public ResponseEntity<Map<String, Boolean>> validateRestaurant(@PathVariable("id_restaurant") @Valid @NotNull Long idRestaurant) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(Collections.singletonMap(Constants.RESPONSE_IS_A_RESTAURANT_EMPLOYEE_KEY, personHandler.existsRelationWithUserAndIdRestaurant(idRestaurant)));
+    }
+
+
 }

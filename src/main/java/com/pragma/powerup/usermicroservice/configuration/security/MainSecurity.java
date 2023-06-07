@@ -47,6 +47,7 @@ public class MainSecurity {
                         .requestMatchers("/auth/login", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health","/user/createClient").permitAll()
                         .requestMatchers("/user/validateRole", "/user/createOwner").hasRole("ADMIN")
                         .requestMatchers("/user/createEmployee").hasRole("OWNER")
+                        .requestMatchers("/user/validate-restaurant/{id_restaurant}").hasRole("EMPLOYEE")
                         .anyRequest().authenticated()
                 )
                 .formLogin().disable()

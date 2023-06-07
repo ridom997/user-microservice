@@ -188,4 +188,22 @@ public class ControllerAdvisor {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Error parsing a request variable"));
     }
+
+    @ExceptionHandler(NoIdUserFoundInTokenException.class)
+    public ResponseEntity<Map<String, String>> handleNoIdUserFoundInTokenException(NoIdUserFoundInTokenException exception) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "Id user not found in jwt token"));
+    }
+
+    @ExceptionHandler(NoRoleFoundInTokenException.class)
+    public ResponseEntity<Map<String, String>> handleNoRoleFoundInTokenException(NoRoleFoundInTokenException noRoleFoundInTokenException) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, noRoleFoundInTokenException.getMessage()));
+    }
+
+    @ExceptionHandler(NoRestaurantAssociatedWithUserException.class)
+    public ResponseEntity<Map<String, String>> handleNoRestaurantAssociatedWithUserException(NoRestaurantAssociatedWithUserException noRestaurantAssociatedWithUserException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, "User doesn't have a idRestaurant associated"));
+    }
 }

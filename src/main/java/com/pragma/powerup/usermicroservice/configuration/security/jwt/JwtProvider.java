@@ -50,6 +50,10 @@ public class JwtProvider {
         return Jwts.parserBuilder().setSigningKey(secret.getBytes()).build().parseClaimsJws(token).getBody().getSubject();
     }
 
+    public Claims getClaimsFromToken(String jwtToken) {
+        return Jwts.parserBuilder().setSigningKey(secret.getBytes()).build().parseClaimsJws(jwtToken).getBody();
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(secret.getBytes()).build().parseClaimsJws(token);

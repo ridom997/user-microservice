@@ -82,7 +82,11 @@ Cada vez que se vaya a revisar un lote de historias de usuario se recomienda bor
 + Es necesario ejecutar del data.sql la sección "-- hu-8" para actualizar el nombre del rol destinado al cliente.
 + El cliente quedará con ROLE_CLIENT, no se le pedirá fecha de nacimiento.
 + Si ya existe un usuario en base de datos con correo o (dni y tipoDni) igual a los del cliente, no se podrá agregar al cliente para mantener la consistencia en la base de datos del reto. 
-
+### HU12:
++ Es necesario ejecutar del data.sql la seccion "-- hu-12" para permitir que un user tipo employee tenga asociado un restaurante al momento de su creacion.
++ Se realizó un endpoint "/user/validate-restaurant/{id_restaurant}" para saber si un empleado labora o no en un restaurante. 
+  + Se debe estar autenticado como empleado (employee) para usar dicho endpoint. 
+  + Este endpoint valida si el idUser (presente en el token jwt) es el empleado del restaurante que llega en el path {id_restaurant}
 <!-- ROADMAP -->
 ## Tests
 
