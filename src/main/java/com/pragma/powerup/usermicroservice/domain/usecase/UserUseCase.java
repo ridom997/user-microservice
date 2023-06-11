@@ -3,7 +3,9 @@ package com.pragma.powerup.usermicroservice.domain.usecase;
 import com.pragma.powerup.usermicroservice.configuration.Constants;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
+import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
+import com.pragma.powerup.usermicroservice.domain.mappers.UserMapper;
 import com.pragma.powerup.usermicroservice.domain.model.User;
 import com.pragma.powerup.usermicroservice.domain.spi.IPasswordActionsPort;
 import com.pragma.powerup.usermicroservice.domain.spi.IRestaurantValidationCommunicationPort;
@@ -12,8 +14,9 @@ import com.pragma.powerup.usermicroservice.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.usermicroservice.domain.validations.ArgumentValidations;
 import com.pragma.powerup.usermicroservice.domain.validations.UserValidations;
 
-import static com.pragma.powerup.usermicroservice.configuration.Constants.EMPLOYEE_ROLE_NAME;
-import static com.pragma.powerup.usermicroservice.configuration.Constants.ID_ROLE_MESSAGE;
+import java.util.List;
+
+import static com.pragma.powerup.usermicroservice.configuration.Constants.*;
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
@@ -49,7 +52,7 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public boolean userHasRole(Long idUser, Long idRole) {
         if (idUser == null || idRole == null)
-            throw new RequiredVariableNotPresentException();
+            throw new RequiredVariableNotPresentException("IdUser or idRole not present");
         User user = findUserById(idUser);
         if(user.getRole() == null)
             throw new UserDoesntHaveRoleException();
@@ -60,7 +63,7 @@ public class UserUseCase implements IUserServicePort {
     public User findUserById(Long idUser) {
         User user = userPersistencePort.findUserById(idUser);
         if (user == null)
-            throw new UserDoesntExistException();
+            throw new UserDoesntExistException(PERSON_NOT_FOUND_MESSAGE + idUser);
         return user;
     }
 
@@ -100,6 +103,16 @@ public class UserUseCase implements IUserServicePort {
         if(user.getIdRestaurant() == null)
             throw new NoRestaurantAssociatedWithUserException();
         return user.getIdRestaurant().equals(idRestaurant);
+    }
+
+    @Override
+    public List<UserBasicInfoDto> getBasicInfoOfUsers(List<Long> userIdList, String token) {
+        tokenValidationsPort.verifyRoleInToken(token,ADMIN_ROLE_NAME);
+        ArgumentValidations.validateList(userIdList,"User id list");
+        return  userIdList.stream()
+                .map(this::findUserById)
+                .map(UserMapper::mapToUserBasicInfoDto)
+                .toList();
     }
 
 
