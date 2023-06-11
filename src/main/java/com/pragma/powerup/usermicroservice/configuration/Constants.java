@@ -16,7 +16,7 @@ public class Constants {
     public static final String NO_DATA_FOUND_MESSAGE = "No data found for the requested petition";
     public static final String PERSON_ALREADY_EXISTS_MESSAGE = "A person already exists with the DNI number and DNI type provided";
     public static final String MAIL_ALREADY_EXISTS_MESSAGE = "A person with that mail already exists";
-    public static final String PERSON_NOT_FOUND_MESSAGE = "No person found with the id provided";
+    public static final String PERSON_NOT_FOUND_MESSAGE = "No person found with the id: ";
     public static final String ROLE_NOT_FOUND_MESSAGE = "No role found with the id provided";
     public static final String ROLE_NOT_ALLOWED_MESSAGE = "No permission granted to create users with this role";
     public static final String USER_ALREADY_EXISTS_MESSAGE = "A user already exists with the role provided";
@@ -53,6 +53,7 @@ public class Constants {
     public static final String TOKEN_MESSAGE = "Token";
 
     public static final String EMPLOYEE_ROLE_NAME = "ROLE_EMPLOYEE";
+    public static final String ADMIN_ROLE_NAME = "ROLE_ADMIN";
 
 
 

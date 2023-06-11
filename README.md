@@ -87,6 +87,9 @@ Cada vez que se vaya a revisar un lote de historias de usuario se recomienda bor
 + Se realizó un endpoint "/user/validate-restaurant/{id_restaurant}" para saber si un empleado labora o no en un restaurante. 
   + Se debe estar autenticado como empleado (employee) para usar dicho endpoint. 
   + Este endpoint valida si el idUser (presente en el token jwt) es el empleado del restaurante que llega en el path {id_restaurant}
+### HU14:
++ Se hizo un endpoint "/user/get-basic-info" para traer la info basica de contacto a partir de una lista de ids de usuario.
++ Para utilizar dicho endpoint es necesario estar autenticado como administrador
 <!-- ROADMAP -->
 ## Tests
 

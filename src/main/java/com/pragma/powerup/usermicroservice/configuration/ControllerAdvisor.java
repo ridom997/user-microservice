@@ -104,7 +104,7 @@ public class ControllerAdvisor {
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(
             RequiredVariableNotPresentException requiredVariableNotPresentException) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, REQUIRED_VARIABLE_NOT_FOUND));
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, requiredVariableNotPresentException.getMessage()));
     }
 
     @ExceptionHandler(PhoneRegexException.class)
@@ -147,7 +147,7 @@ public class ControllerAdvisor {
     public ResponseEntity<Map<String, String>> handleUserNotFoundException(
             UserDoesntExistException userDoesntExistException) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, PERSON_NOT_FOUND_MESSAGE));
+                .body(Collections.singletonMap(RESPONSE_ERROR_MESSAGE_KEY, userDoesntExistException.getMessage()));
     }
 
     @ExceptionHandler(FailConnectionToExternalMicroserviceException.class)

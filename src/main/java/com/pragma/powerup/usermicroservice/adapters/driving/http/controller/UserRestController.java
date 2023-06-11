@@ -7,6 +7,7 @@ import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.request.Use
 import com.pragma.powerup.usermicroservice.adapters.driving.http.dto.response.UserResponseDto;
 import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserHandler;
 import com.pragma.powerup.usermicroservice.configuration.Constants;
+import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -123,5 +125,22 @@ public class UserRestController {
                 .body(Collections.singletonMap(Constants.RESPONSE_IS_A_RESTAURANT_EMPLOYEE_KEY, personHandler.existsRelationWithUserAndIdRestaurant(idRestaurant)));
     }
 
+    @Operation(summary = "Get basic info of list of user",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "List of users found (if there is more than 1 id in the request then we get a list of the example object)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserBasicInfoDto.class))),
+                    @ApiResponse(responseCode = "404", description = "No user found",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized request",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error"))),
+                    @ApiResponse(responseCode = "400", description = "Bad request (check response message)",
+                            content = @Content(mediaType = "application/json", schema = @Schema(ref = "#/components/schemas/Error")))
+            })
+    @PostMapping(value = "get-basic-info")
+    @SecurityRequirement(name = "jwt")
+    public ResponseEntity<List<UserBasicInfoDto>> getBasicInfoOfUsers(@RequestBody @Valid @NotNull List<Long> userIdList) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(personHandler.getBasicInfoOfUsers(userIdList));
+    }
 
 }
