@@ -2,6 +2,7 @@ package com.pragma.powerup.usermicroservice.domain.usecase;
 
 import com.pragma.powerup.usermicroservice.adapters.driven.jpa.mysql.exceptions.NoDataFoundException;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
+import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import com.pragma.powerup.usermicroservice.domain.model.Role;
 import com.pragma.powerup.usermicroservice.domain.model.User;
@@ -17,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.pragma.powerup.usermicroservice.configuration.Constants.ADMIN_ROLE_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -443,4 +448,27 @@ class UserUseCaseTest {
         verify(mockUserPersistencePort, times(1)).findUserById(idUserFromToken);
     }
 
+    @Test
+    void getBasicInfoOfUserTest_successfully() {
+        ArrayList<Long> userIdList = new ArrayList<>();
+        userIdList.add(1L);
+        userIdList.add(2L);
+
+        String token = "test_token";
+
+        User user1 = new User(/* user1 data */);
+        User user2 = new User(/* user2 data */);
+
+        when(mockUserPersistencePort.findUserById(1L)).thenReturn(user1);
+        when(mockUserPersistencePort.findUserById(2L)).thenReturn(user2);
+
+        // Act
+        List<UserBasicInfoDto> result = userUseCaseUnderTest.getBasicInfoOfUsers(userIdList, token);
+
+        // Assert
+        assertEquals(2, result.size());
+        verify(tokenValidationsPort, times(1)).verifyRoleInToken(token, ADMIN_ROLE_NAME);
+        verify(mockUserPersistencePort, times(1)).findUserById(1L);
+        verify(mockUserPersistencePort, times(1)).findUserById(2L);
+    }
 }

@@ -1,6 +1,9 @@
 package com.pragma.powerup.usermicroservice.domain.api;
 
+import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
 import com.pragma.powerup.usermicroservice.domain.model.User;
+
+import java.util.List;
 
 public interface IUserServicePort {
     void saveUser(User user);
@@ -14,4 +17,6 @@ public interface IUserServicePort {
     User saveClient(User user, Long idRole);
 
     Boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant, String token);
+
+    List<UserBasicInfoDto> getBasicInfoOfUsers(List<Long> userIdList, String token);
 }

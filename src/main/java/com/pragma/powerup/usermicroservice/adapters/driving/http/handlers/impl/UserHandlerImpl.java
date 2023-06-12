@@ -9,8 +9,11 @@ import com.pragma.powerup.usermicroservice.adapters.driving.http.handlers.IUserH
 import com.pragma.powerup.usermicroservice.adapters.driving.http.mapper.IUserRequestMapper;
 import com.pragma.powerup.usermicroservice.configuration.security.jwt.JwtUtils;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
+import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +47,12 @@ public class UserHandlerImpl implements IUserHandler {
     @Override
     public boolean existsRelationWithUserAndIdRestaurant(Long idRestaurant) {
         return personServicePort.existsRelationWithUserAndIdRestaurant(idRestaurant, JwtUtils.getTokenFromRequestHeaders());
+    }
+
+    @Override
+    public List<UserBasicInfoDto> getBasicInfoOfUsers(List<Long> userIdList) {
+        Set<Long> uniqueLongs = new HashSet<>(userIdList); //only unique longs
+        List<Long> uniqueUserIdList = new ArrayList<>(uniqueLongs); //final id list
+        return personServicePort.getBasicInfoOfUsers(uniqueUserIdList,JwtUtils.getTokenFromRequestHeaders());
     }
 }

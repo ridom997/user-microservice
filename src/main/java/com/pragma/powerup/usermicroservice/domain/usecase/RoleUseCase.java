@@ -23,7 +23,7 @@ public class RoleUseCase implements IRoleServicePort {
 
     @Override
     public Role getRoleById(Long id) {
-        if(id == null) throw new RequiredVariableNotPresentException();
+        if(id == null) throw new RequiredVariableNotPresentException("idRole not present");
         Role role = rolePersistencePort.getRoleById(id);
         if (role == null) throw new RoleNotFoundException();
         return role;
