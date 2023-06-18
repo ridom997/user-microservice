@@ -1,6 +1,6 @@
 package com.pragma.powerup.usermicroservice.domain.validations;
 
-import com.pragma.powerup.usermicroservice.configuration.SingletonConstants;
+import com.pragma.powerup.usermicroservice.domain.constants.SingletonConstants;
 import com.pragma.powerup.usermicroservice.configuration.utils.AgeUtils;
 import com.pragma.powerup.usermicroservice.domain.exceptions.*;
 import com.pragma.powerup.usermicroservice.domain.model.User;
@@ -8,7 +8,8 @@ import com.pragma.powerup.usermicroservice.domain.model.User;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-import static com.pragma.powerup.usermicroservice.configuration.Constants.*;
+import static com.pragma.powerup.usermicroservice.domain.constants.DomainConstants.*;
+
 
 public class UserValidations {
 

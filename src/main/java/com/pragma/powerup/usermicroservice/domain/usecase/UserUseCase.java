@@ -1,6 +1,5 @@
 package com.pragma.powerup.usermicroservice.domain.usecase;
 
-import com.pragma.powerup.usermicroservice.configuration.Constants;
 import com.pragma.powerup.usermicroservice.domain.api.IRoleServicePort;
 import com.pragma.powerup.usermicroservice.domain.api.IUserServicePort;
 import com.pragma.powerup.usermicroservice.domain.dto.UserBasicInfoDto;
@@ -16,7 +15,8 @@ import com.pragma.powerup.usermicroservice.domain.validations.UserValidations;
 
 import java.util.List;
 
-import static com.pragma.powerup.usermicroservice.configuration.Constants.*;
+import static com.pragma.powerup.usermicroservice.domain.constants.DomainConstants.*;
+
 
 public class UserUseCase implements IUserServicePort {
     private final IUserPersistencePort userPersistencePort;
@@ -44,7 +44,7 @@ public class UserUseCase implements IUserServicePort {
     public User saveOwner(User user) {
         UserValidations.verifyUserAge(user.getBirthday());
         UserValidations.basicUserVariablesValidations(user);
-        user.setRole(roleServicePort.getRoleById(Constants.OWNER_ROLE_ID));
+        user.setRole(roleServicePort.getRoleById(OWNER_ROLE_ID));
         user.setPassword(passwordActionsPort.encryptPassword(user.getPassword()));
         return userPersistencePort.saveUser(user);
     }
@@ -73,11 +73,11 @@ public class UserUseCase implements IUserServicePort {
         ArgumentValidations.validateObject(idRestaurant,"Id restaurant");
         if (Boolean.FALSE.equals(restaurantValidationCommunicationPort.isTheRestaurantOwner(idRestaurant)))
             throw new ForbiddenActionException("The user who made the request does not have permission to create employees in this restaurant.");
-        if(!idRole.equals(Constants.EMPLOYEE_ROLE_ID))
+        if(!idRole.equals(EMPLOYEE_ROLE_ID))
             throw new ForbiddenActionException("The user who made the request attempted to create a non-employee user.");
         UserValidations.verifyUserAge(user.getBirthday());
         UserValidations.basicUserVariablesValidations(user);
-        user.setRole(roleServicePort.getRoleById(Constants.EMPLOYEE_ROLE_ID));
+        user.setRole(roleServicePort.getRoleById(EMPLOYEE_ROLE_ID));
         user.setPassword(passwordActionsPort.encryptPassword(user.getPassword()));
         user.setIdRestaurant(idRestaurant);
         return userPersistencePort.saveUser(user);
@@ -86,10 +86,10 @@ public class UserUseCase implements IUserServicePort {
     @Override
     public User saveClient(User user, Long idRole) {
         ArgumentValidations.validateObject(idRole,ID_ROLE_MESSAGE);
-        if(!idRole.equals(Constants.CLIENT_ROLE_ID))
+        if(!idRole.equals(CLIENT_ROLE_ID))
             throw new ForbiddenActionException("The user who made the request attempted to create a non-client user.");
         UserValidations.basicUserVariablesValidations(user);
-        user.setRole(roleServicePort.getRoleById(Constants.CLIENT_ROLE_ID));
+        user.setRole(roleServicePort.getRoleById(CLIENT_ROLE_ID));
         user.setPassword(passwordActionsPort.encryptPassword(user.getPassword()));
         return userPersistencePort.saveUser(user);
     }

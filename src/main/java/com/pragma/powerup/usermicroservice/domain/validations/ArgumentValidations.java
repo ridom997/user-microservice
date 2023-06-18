@@ -4,7 +4,7 @@ import com.pragma.powerup.usermicroservice.domain.exceptions.RequiredVariableNot
 
 import java.util.List;
 
-import static com.pragma.powerup.usermicroservice.configuration.Constants.NOT_PRESENT_MESSAGE;
+import static com.pragma.powerup.usermicroservice.domain.constants.DomainConstants.NOT_PRESENT_MESSAGE;
 
 public class ArgumentValidations {
 
