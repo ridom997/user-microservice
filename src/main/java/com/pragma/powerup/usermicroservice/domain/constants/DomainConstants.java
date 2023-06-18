@@ -1,6 +1,7 @@
 package com.pragma.powerup.usermicroservice.domain.constants;
 
 public class DomainConstants {
+    private DomainConstants() {}
     public static final Long CLIENT_ROLE_ID = 2L;
     public static final Long OWNER_ROLE_ID = 3L;
     public static final Long EMPLOYEE_ROLE_ID = 4L;
